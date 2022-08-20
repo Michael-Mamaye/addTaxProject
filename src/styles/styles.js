@@ -42,7 +42,8 @@ export const inputPercentStyle = {
 };
 
 export const submitButtonStyle = {
-  '&:hover':{
+  appearance: "none",
+  "&:hover": {
     background: "rgb(240, 73, 5) !important",
     cursor: "pointer !important",
   },

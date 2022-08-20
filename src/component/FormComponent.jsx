@@ -8,20 +8,28 @@ import {
   taxPercentInputStyle,
 } from "../styles/styles";
 import resourceData from "../data/resource.json";
+import "../styles/radioButtonAndCheckboxStyle.css";
+
 const FormComponent = () => {
   const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+  const [searchText, setsearchText] = useState(null);
+  // const [bracelets, setBracelets] = useState(false);
 
-  const [bracelets, setBracelets] = useState(false);
+  const filterItems = () =>
+    searchText
+      ? resourceData.filter((data) =>
+          data.name.toLowerCase().includes(searchText.toLowerCase())
+        )
+      : resourceData;
 
-  const braces = resourceData.filter((data) =>
+  const braces = filterItems().filter((data) =>
     data.parent_id === 14866 ? data.id : null
   );
+  console.log({ filterItems });
 
-  const items = resourceData.filter((data) =>
-    data.parent_id === 14866 ? data.id : null
+  const items = filterItems().filter((data) =>
+    data.parent_id === null ? data.id : null
   );
-
-  const filterItems = () => resourceData.filter((data) => data.includes());
   return (
     <div>
       <Formik
@@ -34,9 +42,7 @@ const FormComponent = () => {
         // validationSchema={{}}
         onSubmit={async (values) => {
           await sleep(500);
-          let toBeDisplayed=values;
-          toBeDisplayed.rate=toBeDisplayed.rate/100
-          alert(JSON.stringify(toBeDisplayed, null, 2));
+          alert(JSON.stringify(values, null, 2));
         }}
       >
         {({ values, handleSubmit, setFieldValue }) => (
@@ -86,29 +92,41 @@ const FormComponent = () => {
             <hr style={{ marginTop: 15, opacity: 0.7 }} />
 
             <label style={labelStyle}>
-              <Field name="appliedTo">
-                {({ field }) => (
-                  <input {...field} style={taxInputStyle} type="text" placeholder="Search terms" />
-                )}
-              </Field>
+              <input
+                style={taxInputStyle}
+                onChange={(e) => setsearchText(e.target.value)}
+                type="text"
+                placeholder="Search terms"
+              />
             </label>
 
             {/*  the below code is for the nested checkbox
              */}
 
-            <label style={labelStyle}>
-              <input
-                type="checkbox"
-                id="selectAllBracelets"
-                onClick={() => setBracelets(!bracelets)}
-              />
-              <span>Bracelets</span>
-            </label>
+            {braces.length > 0 && (
+              <label style={labelStyle}>
+                <input
+                  type="checkbox"
+                  id="selectAllBracelets"
+                  className="checkmark"
+                  onClick={async () => {
+                    for (let i = 0; i < braces.length; i++) {
+                      await document.getElementById(braces[i].id).click();
+                    }
+                  }}
+                />
+                <span>Bracelets</span>
+              </label>
+            )}
             {braces.map((data) => (
-              <label style={{ ...labelStyle, marginLeft: 20 }}>
+              <label
+                className="container"
+                style={{ ...labelStyle, marginLeft: 20 }}
+              >
                 <Field name="applicableItems">
                   {({ field }) => (
                     <input
+                      className="checkmark"
                       {...field}
                       id={data.id}
                       type="checkbox"
@@ -120,19 +138,32 @@ const FormComponent = () => {
                 <br />
               </label>
             ))}
-            <label style={labelStyle}>
-              <input
-                type="checkbox"
-                id="selectAllItems"
-                onClick={() => setBracelets(!bracelets)}
-              />
-            </label>
+
+            {/* for the items or null parent_id checkbox */}
+            {items.length > 0 && (
+              <label style={labelStyle}>
+                <input
+                  type="checkbox"
+                  className="checkmark"
+                  id="selectAllItems"
+                  onClick={async () => {
+                    for (let i = 0; i < items.length; i++) {
+                      await document.getElementById(items[i].id).click();
+                    }
+                  }}
+                />
+              </label>
+            )}
             {items.map((data) => (
-              <label style={{ ...labelStyle, marginLeft: 20 }}>
+              <label
+                className="container"
+                style={{ ...labelStyle, marginLeft: 20 }}
+              >
                 <Field name="applicableItems">
                   {({ field }) => (
                     <input
                       {...field}
+                      className="checkmark"
                       id={data.id}
                       type="checkbox"
                       value={data.id}
@@ -143,10 +174,22 @@ const FormComponent = () => {
                 <br />
               </label>
             ))}
-            <div style={{display:'flex',flexDirection:'row',justifyContent:'end'}}>
-            <button type="submit" style={{...submitButtonStyle}}>
-              {`Apply tax to ${values.applicableItems.length} Item(s)`}
-            </button>
+            {filterItems().length === 0 && (
+              <div>
+                <p>No Items Found</p>
+              </div>
+            )}
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "end",
+                marginTop: 10,
+              }}
+            >
+              <button type="submit" style={{ ...submitButtonStyle }}>
+                {`Apply tax to ${values.applicableItems.length} Item(s)`}
+              </button>
             </div>
           </Form>
         )}
