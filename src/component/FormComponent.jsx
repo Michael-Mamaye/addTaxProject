@@ -12,7 +12,6 @@ import resourceData from "../data/resource.json";
 import "../styles/radioButtonAndCheckboxStyle.css";
 
 const FormComponent = () => {
-  const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   const [searchText, setsearchText] = useState(null);
   const [count, setCount] = useState(1);
 
@@ -44,11 +43,10 @@ const FormComponent = () => {
           name: Yup.string().required("name is required"),
         })}
         onSubmit={async (values) => {
-          await sleep(500);
           alert(JSON.stringify(values, null, 2));
         }}
       >
-        {({ values, errors }) => (
+        {({ values, errors, setFieldValue }) => (
           <Form>
             {/* if there is an error scroll to top */}
 
@@ -145,7 +143,10 @@ const FormComponent = () => {
             <label style={labelStyle}>
               <input
                 style={taxInputStyle}
-                onChange={(e) => setsearchText(e.target.value)}
+                onChange={(e) => {
+                  setsearchText(e.target.value);
+                  setFieldValue('applicableItems',[])
+                }}
                 type="search"
                 placeholder="Search terms"
               />
@@ -179,8 +180,8 @@ const FormComponent = () => {
                     ) {
                       await document.getElementById("applyToAll").click();
                     } else {
-                      document.getElementById("applyToAll").checked=false;
-                      document.getElementById("applyToSome").checked=true;
+                      document.getElementById("applyToAll").checked = false;
+                      document.getElementById("applyToSome").checked = true;
                     }
                   }}
                 />
@@ -232,8 +233,8 @@ const FormComponent = () => {
                     ) {
                       await document.getElementById("applyToAll").click();
                     } else {
-                      document.getElementById("applyToAll").checked=false;
-                      document.getElementById("applyToSome").checked=true;
+                      document.getElementById("applyToAll").checked = false;
+                      document.getElementById("applyToSome").checked = true;
                     }
                   }}
                 />
