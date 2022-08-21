@@ -1,42 +1,44 @@
 /* for the all input type radio, the below code will be applied */
 
 input[type="radio"] {
-    -webkit-appearance: none;
-    width: 20px;
-    height: 20px;
-    border: 2px solid rgba(0,0,0,0.2);
-    border-radius: 50%;
-  }
-  
-  input[type="radio"]:hover {
-    border: 2px solid rgb(241, 109, 55) ;
-    border-radius: 50%;
-    cursor: pointer;
-  }
-  
-  input[type="radio"]:before {
-    content: "";
-    display: block;
-    border-radius: 50%;
-    background-color: white;
-    width: 90%;
-    height: 90%;
-  }
-  input[type="radio"]:checked:before {
-    color: white;
-    background-color: rgb(241, 109, 55);
-    content: "✔";
-    border:3px solid rgb(241, 109, 55);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: 'center';
-    margin-left: -1.5px;
-    margin-top: -1.5px;
-    font-size: 17px;
-  }
-  
-  
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(0, 0, 0, 0.2);
+  border-radius: 50%;
+}
+
+input[type="radio"]:hover {
+  border: 2px solid rgb(241, 109, 55);
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+input[type="radio"]:before {
+  content: "";
+  display: block;
+  border-radius: 50%;
+  background-color: white;
+  width: 90%;
+  height: 90%;
+}
+input[type="radio"]:checked:before {
+  color: white;
+  background-color: rgb(241, 109, 55);
+  content: "✔";
+  border: 3px solid rgb(241, 109, 55);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: "center";
+  margin-left: -1.5px;
+  margin-top: -1.5px;
+  font-size: 17px;
+}
+
+button[type="submit"]:hover {
+  cursor: pointer;
+}
 
 /* for the all input type checkbox, the below code will be applied */
 
@@ -45,11 +47,10 @@ input[type="checkbox"] {
   width: 20px;
   height: 20px;
   border: 3px solid #007a7e;
-  
 }
 
 input[type="checkbox"]:hover {
-  border: 3px solid #005457 ;
+  border: 3px solid #005457;
   cursor: pointer;
 }
 
@@ -65,9 +66,8 @@ input[type="checkbox"]:checked:before {
   content: "✔";
   display: flex;
   align-items: center;
-  justify-content: 'center';
+  justify-content: "center";
   margin-left: 0px;
   font-size: 17px;
-  transition: all .2s;
+  transition: all 0.2s;
 }
-

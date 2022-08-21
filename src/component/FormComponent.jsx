@@ -7,13 +7,14 @@ import {
   taxInputStyle,
   taxPercentInputStyle,
 } from "../styles/styles";
+import * as Yup from "yup";
 import resourceData from "../data/resource.json";
 import "../styles/radioButtonAndCheckboxStyle.css";
 
 const FormComponent = () => {
   const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   const [searchText, setsearchText] = useState(null);
-  // const [bracelets, setBracelets] = useState(false);
+  const [count, setCount] = useState(1);
 
   const filterItems = () =>
     searchText
@@ -36,29 +37,38 @@ const FormComponent = () => {
         initialValues={{
           name: "",
           rate: 5,
-          appliedTo: "",
+          appliedTo: "apply to some",
           applicableItems: [],
         }}
-        // validationSchema={{}}
+        validationSchema={Yup.object().shape({
+          name: Yup.string().required("name is required"),
+        })}
         onSubmit={async (values) => {
           await sleep(500);
           alert(JSON.stringify(values, null, 2));
         }}
       >
-        {({ values, handleSubmit, setFieldValue }) => (
+        {({ values, errors }) => (
           <Form>
-            {console.log(values)}
+            {/* if there is an error scroll to top */}
+
+            {errors.name && window.scrollTo(0, 0)}
             <label style={labelStyle}>
               <Field name="name">
                 {({ field }) => (
                   <input
                     {...field}
-                    style={taxInputStyle}
+                    style={
+                      errors.name
+                        ? { ...taxInputStyle, border: "1px solid red" }
+                        : { ...taxInputStyle }
+                    }
                     type="text"
-                    placeholder="Tax Placeholder"
+                    placeholder="Tax name"
                   />
                 )}
               </Field>
+
               <Field name="rate">
                 {({ field }) => (
                   <input
@@ -74,7 +84,27 @@ const FormComponent = () => {
             <label style={labelStyle}>
               <Field name="appliedTo">
                 {({ field }) => (
-                  <input {...field} type="radio" value="apply to all" />
+                  <input
+                    {...field}
+                    type="radio"
+                    id="applyToAll"
+                    onClick={async (e) => {
+                      if (count !== 2) {
+                        if (
+                          !document.getElementById("selectAllBracelets").checked
+                        )
+                          await document
+                            .getElementById("selectAllBracelets")
+                            .click();
+                        if (!document.getElementById("selectAllItems").checked)
+                          await document
+                            .getElementById("selectAllItems")
+                            .click();
+                      }
+                      setCount(2);
+                    }}
+                    value="apply to all"
+                  />
                 )}
               </Field>
               Apply to all items in collection
@@ -83,7 +113,28 @@ const FormComponent = () => {
             <label style={labelStyle}>
               <Field name="appliedTo">
                 {({ field }) => (
-                  <input {...field} type="radio" value="apply to some" />
+                  <input
+                    {...field}
+                    type="radio"
+                    id="applyToSome"
+                    onClick={async (e) => {
+                      if (count !== 1) {
+                        if (
+                          document.getElementById("selectAllBracelets").checked
+                        )
+                          await document
+                            .getElementById("selectAllBracelets")
+                            .click();
+                        if (document.getElementById("selectAllItems").checked)
+                          await document
+                            .getElementById("selectAllItems")
+                            .click();
+                      }
+                      setCount(1);
+                    }}
+                    defaultChecked
+                    value="apply to some"
+                  />
                 )}
               </Field>
               Apply to specific items
@@ -95,7 +146,7 @@ const FormComponent = () => {
               <input
                 style={taxInputStyle}
                 onChange={(e) => setsearchText(e.target.value)}
-                type="text"
+                type="search"
                 placeholder="Search terms"
               />
             </label>
@@ -108,10 +159,28 @@ const FormComponent = () => {
                 <input
                   type="checkbox"
                   id="selectAllBracelets"
-                  className="checkmark"
                   onClick={async () => {
-                    for (let i = 0; i < braces.length; i++) {
-                      await document.getElementById(braces[i].id).click();
+                    if (
+                      !document.getElementById("selectAllBracelets").checked
+                    ) {
+                      for (let i = 0; i < braces.length; i++) {
+                        await document.getElementById(braces[i].id).click();
+                      }
+                    } else
+                      for (let i = 0; i < braces.length; i++) {
+                        if (
+                          document.getElementById(braces[i].id).checked !== true
+                        )
+                          await document.getElementById(braces[i].id).click();
+                      }
+                    if (
+                      document.getElementById("selectAllBracelets").checked &&
+                      document.getElementById("selectAllItems").checked
+                    ) {
+                      await document.getElementById("applyToAll").click();
+                    } else {
+                      document.getElementById("applyToAll").checked=false;
+                      document.getElementById("applyToSome").checked=true;
                     }
                   }}
                 />
@@ -120,13 +189,13 @@ const FormComponent = () => {
             )}
             {braces.map((data) => (
               <label
+                key={data.id}
                 className="container"
                 style={{ ...labelStyle, marginLeft: 20 }}
               >
                 <Field name="applicableItems">
                   {({ field }) => (
                     <input
-                      className="checkmark"
                       {...field}
                       id={data.id}
                       type="checkbox"
@@ -144,11 +213,27 @@ const FormComponent = () => {
               <label style={labelStyle}>
                 <input
                   type="checkbox"
-                  className="checkmark"
                   id="selectAllItems"
                   onClick={async () => {
-                    for (let i = 0; i < items.length; i++) {
-                      await document.getElementById(items[i].id).click();
+                    if (!document.getElementById("selectAllItems").checked) {
+                      for (let i = 0; i < items.length; i++) {
+                        await document.getElementById(items[i].id).click();
+                      }
+                    } else
+                      for (let i = 0; i < items.length; i++) {
+                        if (
+                          document.getElementById(items[i].id).checked !== true
+                        )
+                          await document.getElementById(items[i].id).click();
+                      }
+                    if (
+                      document.getElementById("selectAllBracelets").checked &&
+                      document.getElementById("selectAllItems").checked
+                    ) {
+                      await document.getElementById("applyToAll").click();
+                    } else {
+                      document.getElementById("applyToAll").checked=false;
+                      document.getElementById("applyToSome").checked=true;
                     }
                   }}
                 />
@@ -156,6 +241,7 @@ const FormComponent = () => {
             )}
             {items.map((data) => (
               <label
+                key={data.id}
                 className="container"
                 style={{ ...labelStyle, marginLeft: 20 }}
               >
@@ -163,7 +249,6 @@ const FormComponent = () => {
                   {({ field }) => (
                     <input
                       {...field}
-                      className="checkmark"
                       id={data.id}
                       type="checkbox"
                       value={data.id}
